@@ -19,44 +19,44 @@ domain = get_command_line_argument
 dns_raw = File.readlines("zone")
 
 def singleArrayToHash(array)
-    records = {}
-    array.each do |item|
-        records[item[1]] = { rectype: item[0], destination: item[2] }
-    end
-    return records
+  records = {}
+  array.each do |item|
+    records[item[1]] = { rectype: item[0], destination: item[2] }
+  end
+  return records
 end
 
 def parse_dns(dns_raw)
-    stripped_dns = dns_raw.map do |line|
-        line.strip
-    end
-    rejected_dns = stripped_dns.reject do |line|
-        line.empty? || line[0] == "#"
-    end
-    selected_dns = rejected_dns.map do |line|
-        line.split(", ")
-    end
-    filtered_dns = selected_dns.filter do |item|
-        item[0] == "CNAME" || item[0] == "A"
-    end
-    finalDNSHash = singleArrayToHash(filtered_dns)
-    return finalDNSHash
+  stripped_dns = dns_raw.map do |line|
+    line.strip
+  end
+  rejected_dns = stripped_dns.reject do |line|
+    line.empty? || line[0] == "#"
+  end
+  selected_dns = rejected_dns.map do |line|
+    line.split(", ")
+  end
+  filtered_dns = selected_dns.filter do |item|
+    item[0] == "CNAME" || item[0] == "A"
+  end
+  finalDNSHash = singleArrayToHash(filtered_dns)
+  return finalDNSHash
 end
 
 def resolve(dns_records, lookup_chain, domain)
-    if dns_records.has_key?(domain)
-        if dns_records[domain][:rectype] == "CNAME"
-            lookup_chain << dns_records[domain][:destination]
-            resolve(dns_records, lookup_chain, dns_records[domain][:destination])
-        elsif dns_records[domain][:rectype] == "A"
-            lookup_chain << dns_records[domain][:destination]
-            return lookup_chain
-        else
-            lookup_chain << "Record Type is Undefined!!!"
-        end
+  if dns_records.has_key?(domain)
+    if dns_records[domain][:rectype] == "CNAME"
+      lookup_chain << dns_records[domain][:destination]
+      resolve(dns_records, lookup_chain, dns_records[domain][:destination])
+    elsif dns_records[domain][:rectype] == "A"
+      lookup_chain << dns_records[domain][:destination]
+      return lookup_chain
     else
-        lookup_chain << "Domain Record does not exist!!!"
+      lookup_chain << "Record Type is Undefined!!!"
     end
+  else
+    lookup_chain << "Domain Record does not exist!!!"
+  end
 end
 
 dns_records = parse_dns(dns_raw)
