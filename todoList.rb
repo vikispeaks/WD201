@@ -21,15 +21,15 @@ class Todo
 
   def to_displayable_string
     date_to_display = if due_today?
-      ""
-    else
-      @due_date
-    end
+        ""
+      else
+        @due_date
+      end
     check_mark = if @completed
-      "[X]"
-    else
-      "[ ]"
-    end
+        "[X]"
+      else
+        "[ ]"
+      end
     return "#{check_mark} #{@text} #{date_to_display}"
   end
 end
@@ -53,7 +53,7 @@ class TodosList
 
   def to_displayable_list
     display_list = @todos.map do |todo|
-        todo.to_displayable_string
+      todo.to_displayable_string
     end
     return display_list.join("\n")
   end
